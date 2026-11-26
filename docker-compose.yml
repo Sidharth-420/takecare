@@ -1,0 +1,42 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: takecare-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: takecare
+      MYSQL_USER: takecareuser
+      MYSQL_PASSWORD: takecarepassword
+      MYSQL_ROOT_PASSWORD: takecare_root_password
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-ptakecare_root_password"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  web:
+    build: .
+    container_name: takecare-web
+    restart: unless-stopped
+    command: >
+      sh -c "python manage.py migrate &&
+             gunicorn takecare.wsgi:application --bind 0.0.0.0:8000"
+    ports:
+      - "8010:8000"
+    environment:
+      DJANGO_SECRET_KEY: "takecare-docker-development-key"
+      DJANGO_DEBUG: "False"
+      DJANGO_ALLOWED_HOSTS: "localhost,127.0.0.1"
+      DB_NAME: takecare
+      DB_USER: takecareuser
+      DB_PASSWORD: takecarepassword
+      DB_HOST: db
+      DB_PORT: "3306"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  mysql_data:

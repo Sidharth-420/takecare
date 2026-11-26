@@ -1,0 +1,17 @@
+# Python
+venv/
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Django
+db.sqlite3
+staticfiles/
+
+# Environment and IDE
+.env
+.idea/
+.DS_Store
+
+# ZAP reports (Jenkins will archive its own reports)
+zap-reports/

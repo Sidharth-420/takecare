@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: takecare
+  labels:
+    app: takecare
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: takecare
+  template:
+    metadata:
+      labels:
+        app: takecare
+    spec:
+      containers:
+        - name: takecare
+          image: sidharth18/takecare:v1
+          ports:
+            - containerPort: 8000
+          env:
+            - name: DJANGO_SECRET_KEY
+              value: "takecare-kubernetes-development-key"
+            - name: DJANGO_DEBUG
+              value: "False"
+            - name: DJANGO_ALLOWED_HOSTS
+              value: "*"
+            - name: DB_NAME
+              value: "takecare"
+            - name: DB_USER
+              value: "takecareuser"
+            - name: DB_PASSWORD
+              value: "takecarepassword"
+            - name: DB_HOST
+              value: "host.docker.internal"
+            - name: DB_PORT
+              value: "3306"
